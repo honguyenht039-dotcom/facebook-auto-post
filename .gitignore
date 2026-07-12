@@ -1,0 +1,14 @@
+# SQLite database file
+*.db
+app.db
+
+# User uploaded images (do not publish to Github)
+uploads/
+
+# Python caching
+__pycache__/
+*.pyc
+
+# Local Streamlit configurations
+.streamlit/config.toml
+.streamlit/secrets.toml
