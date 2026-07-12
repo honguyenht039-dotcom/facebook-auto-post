@@ -23,12 +23,17 @@ def clean_fb_post_content(content):
         "hình ảnh",
         "gợi ý bài viết",
         "bài đăng gợi ý",
+        "chúc bạn",
+        "hy vọng",
         "---"
     ]
     
     lines = content.split('\n')
     cleaned_lines = []
     start_adding = False
+    
+    # Một số emoji phổ biến thường dùng ở tiêu đề
+    title_emojis = ["🌸", "🌟", "✏️", "🔥", "📢", "🔔", "👉", "⚡", "🍀", "💎", "❤️", "🎯"]
     
     for line in lines:
         stripped = line.strip()
@@ -42,9 +47,16 @@ def clean_fb_post_content(content):
         # Kiểm tra xem dòng này có chứa các từ khóa dẫn nhập của AI không
         is_intro = any(prefix in stripped.lower() for prefix in prefixes_to_ignore)
         
+        # Nhận diện dòng bắt đầu tiêu đề thực tế: Thường bắt đầu bằng in đậm '**' hoặc có chứa emoji tiêu đề
+        is_title_format = stripped.startswith("**") or any(emoji in stripped for emoji in title_emojis)
+        
         if not start_adding:
-            # Nếu chưa bắt đầu ghi nhận bài viết, và dòng hiện tại không phải là câu dẫn nhập hoặc đường kẻ phân cách
-            if not is_intro and not stripped.startswith("---") and not stripped.startswith("-"):
+            # Ưu tiên nhận diện tiêu đề thực tế
+            if is_title_format and not is_intro:
+                start_adding = True
+                cleaned_lines.append(line)
+            # Hoặc dòng thường không phải dẫn nhập và không phải gạch ngang phân tách
+            elif not is_intro and not stripped.startswith("---") and not stripped.startswith("-"):
                 start_adding = True
                 cleaned_lines.append(line)
         else:
